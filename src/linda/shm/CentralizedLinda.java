@@ -129,10 +129,7 @@ public class CentralizedLinda implements Linda {
 			}
 			
 		}
-		while(inter == null){
-			inter = find(template);
-		}
-		callback.call(inter);
+	
 		
 		// TODO Auto-generated method stub
 		
