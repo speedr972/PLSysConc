@@ -1,1 +1,6 @@
 Indiquez ici vos modifications. Pourquoi vous les avez fait, et si elle sont finis ou en cours.
+
+21/12/2014 : Vinou
+	J'ai réussi à faire marcher le test callback asynchronious. Pour cela j'ai  un peu changer la fonction find
+	et donc aussi tous les endroits où elle était appelé. Regardez ces changements et dites moi votre avis s'il faut
+	le remanier ou non.
