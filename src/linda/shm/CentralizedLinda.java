@@ -35,18 +35,16 @@ public class CentralizedLinda implements Linda {
 		// TODO Auto-generated method stub
 		moniteur.lock();
 		this.tupleSpace.add(t);
-		this.trouveCallBack(t);
 		if(file>0){
 			this.autorisation.signalAll();
 		}		
+		this.trouveCallBack(t);
 		moniteur.unlock();
 	}
 
 	public Tuple take(Tuple template) {
 	moniteur.lock();
-	//if(!tupleSpace.contains(template)){
-	Iterator<Tuple> it1 = this.tupleSpace.iterator();
-	while(find(template, it1)==null){
+	while(find(template, this.tupleSpace.iterator())==null){
 		try{
 			file++;
 			autorisation.await();
@@ -57,8 +55,7 @@ public class CentralizedLinda implements Linda {
 		}
 		file--;
 	}
-	Iterator<Tuple> it = this.tupleSpace.iterator();
-	Tuple inter = tupleSpace.remove(tupleSpace.indexOf(find(template, it)));
+	Tuple inter = tupleSpace.remove(tupleSpace.indexOf(find(template, this.tupleSpace.iterator())));
 	moniteur.unlock();
 	return inter;
 		
@@ -66,8 +63,7 @@ public class CentralizedLinda implements Linda {
 
 	public Tuple read(Tuple template) {
 		moniteur.lock();
-		Iterator<Tuple> it1 = this.tupleSpace.iterator();
-		while(find(template, it1)==null){
+		while(find(template, this.tupleSpace.iterator())==null){
 			try{
 				file++;
 				autorisation.await();
@@ -77,8 +73,7 @@ public class CentralizedLinda implements Linda {
 			}
 			file--;
 		}
-		Iterator<Tuple> it2 = this.tupleSpace.iterator();
-		Tuple inter = this.find(template, it2);
+		Tuple inter = this.find(template, this.tupleSpace.iterator());
 		moniteur.unlock();
 	
 		return inter;
@@ -86,8 +81,7 @@ public class CentralizedLinda implements Linda {
 
 	public Tuple tryTake(Tuple template) {
 		// TODO Auto-generated method stub
-		Iterator<Tuple> it = this.tupleSpace.iterator();
-		Tuple t = this.find(template,it);
+		Tuple t = this.find(template,this.tupleSpace.iterator());
 		if(t != null){
 			this.tupleSpace.remove(this.tupleSpace.indexOf(t));
 		}
@@ -96,8 +90,7 @@ public class CentralizedLinda implements Linda {
 
 	public Tuple tryRead(Tuple template) {
 		// TODO Auto-generated method stub
-		Iterator<Tuple> it = this.tupleSpace.iterator();
-		return this.find(template,it);
+		return this.find(template,this.tupleSpace.iterator());
 	}
 
 	public Collection<Tuple> takeAll(Tuple template) {
@@ -166,7 +159,7 @@ public class CentralizedLinda implements Linda {
 		boolean arret = false;
 		while(it.hasNext() && arret==false){
 			Tuple i = it.next();
-			if(template.matches(i)){
+			if(template.matches(i) || i.matches(template)){
 				arret = true;
 				ft = i;
 			}
@@ -202,7 +195,6 @@ public class CentralizedLinda implements Linda {
 		ArrayList<CallEvent> inter = (ArrayList<CallEvent>) this.waitingCallBack.get(Ituple);
 		Boolean isTake = false;
 		if(inter != null){
-
 			Iterator<CallEvent> iterator = inter.listIterator();
 			while(iterator.hasNext() && !isTake){
 				CallEvent event = iterator.next();
