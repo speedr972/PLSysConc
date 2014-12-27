@@ -4,3 +4,9 @@ Indiquez ici vos modifications. Pourquoi vous les avez fait, et si elle sont fin
 	J'ai réussi à faire marcher le test callback asynchronious. Pour cela j'ai  un peu changer la fonction find
 	et donc aussi tous les endroits où elle était appelé. Regardez ces changements et dites moi votre avis s'il faut
 	le remanier ou non.
+	
+27/12/2014 : Vinou
+	J'ai séparer en 2 la fonction find car elle ne respectait pas les consignes du projet à savoir 
+	à partir d'un [2, "foo"] par exemple elle pouvait me retourner un [integer,string] ce qui est
+	interdit. mais en séparant les 2 maintenant c'est bon. hum peut etre les nommer de maniere plus générale ...
+	j'y réfléchirai.
