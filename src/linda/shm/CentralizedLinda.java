@@ -44,7 +44,7 @@ public class CentralizedLinda implements Linda {
 
 	public Tuple take(Tuple template) {
 	moniteur.lock();
-	while(find(template, this.tupleSpace.iterator())==null){
+	while(findTupleSpace(template, this.tupleSpace.iterator())==null){
 		try{
 			file++;
 			autorisation.await();
@@ -55,7 +55,7 @@ public class CentralizedLinda implements Linda {
 		}
 		file--;
 	}
-	Tuple inter = tupleSpace.remove(tupleSpace.indexOf(find(template, this.tupleSpace.iterator())));
+	Tuple inter = tupleSpace.remove(tupleSpace.indexOf(findTupleSpace(template, this.tupleSpace.iterator())));
 	moniteur.unlock();
 	return inter;
 		
@@ -63,7 +63,7 @@ public class CentralizedLinda implements Linda {
 
 	public Tuple read(Tuple template) {
 		moniteur.lock();
-		while(find(template, this.tupleSpace.iterator())==null){
+		while(findTupleSpace(template, this.tupleSpace.iterator())==null){
 			try{
 				file++;
 				autorisation.await();
@@ -73,7 +73,7 @@ public class CentralizedLinda implements Linda {
 			}
 			file--;
 		}
-		Tuple inter = this.find(template, this.tupleSpace.iterator());
+		Tuple inter = this.findTupleSpace(template, this.tupleSpace.iterator());
 		moniteur.unlock();
 	
 		return inter;
@@ -81,7 +81,7 @@ public class CentralizedLinda implements Linda {
 
 	public Tuple tryTake(Tuple template) {
 		// TODO Auto-generated method stub
-		Tuple t = this.find(template,this.tupleSpace.iterator());
+		Tuple t = this.findTupleSpace(template,this.tupleSpace.iterator());
 		if(t != null){
 			this.tupleSpace.remove(this.tupleSpace.indexOf(t));
 		}
@@ -90,7 +90,7 @@ public class CentralizedLinda implements Linda {
 
 	public Tuple tryRead(Tuple template) {
 		// TODO Auto-generated method stub
-		return this.find(template,this.tupleSpace.iterator());
+		return this.findTupleSpace(template,this.tupleSpace.iterator());
 	}
 
 	public Collection<Tuple> takeAll(Tuple template) {
@@ -154,12 +154,29 @@ public class CentralizedLinda implements Linda {
 	 * @param Tuple le tuple recherché
 	 * @return Tuple
 	 */
-	public Tuple find(Tuple template, Iterator<Tuple> it){
+	public Tuple findTupleSpace(Tuple template, Iterator<Tuple> it){
 		Tuple ft = null;
 		boolean arret = false;
 		while(it.hasNext() && arret==false){
 			Tuple i = it.next();
-			if(template.matches(i) || i.matches(template)){
+			if(i.matches(template) ){
+				arret = true;
+				ft = i;
+			}
+		}
+		return ft;
+	}
+	
+	/* trouve le tuple recherché dans la file d'attente des callback où sont stocké les tuples
+	 * @param Tuple le tuple recherché
+	 * @return Tuple
+	 */
+	public Tuple findTupleCall(Tuple template, Iterator<Tuple> it){
+		Tuple ft = null;
+		boolean arret = false;
+		while(it.hasNext() && arret==false){
+			Tuple i = it.next();
+			if(template.matches(i)){
 				arret = true;
 				ft = i;
 			}
@@ -191,7 +208,7 @@ public class CentralizedLinda implements Linda {
 	 */
 	public void trouveCallBack(Tuple template){
 		Iterator<Tuple> it = this.waitingCallBack.keySet().iterator();
-		Tuple Ituple = this.find(template,it);
+		Tuple Ituple = this.findTupleCall(template, it);
 		ArrayList<CallEvent> inter = (ArrayList<CallEvent>) this.waitingCallBack.get(Ituple);
 		Boolean isTake = false;
 		if(inter != null){
