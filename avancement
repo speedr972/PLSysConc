@@ -1,12 +1,16 @@
 Indiquez ici vos modifications. Pourquoi vous les avez fait, et si elle sont finis ou en cours.
 
 21/12/2014 : Vinou
-	J'ai réussi à faire marcher le test callback asynchronious. Pour cela j'ai  un peu changer la fonction find
-	et donc aussi tous les endroits où elle était appelé. Regardez ces changements et dites moi votre avis s'il faut
+	J'ai rï¿½ussi ï¿½ faire marcher le test callback asynchronious. Pour cela j'ai  un peu changer la fonction find
+	et donc aussi tous les endroits oï¿½ elle ï¿½tait appelï¿½. Regardez ces changements et dites moi votre avis s'il faut
 	le remanier ou non.
 	
 27/12/2014 : Vinou
-	J'ai séparer en 2 la fonction find car elle ne respectait pas les consignes du projet à savoir 
-	à partir d'un [2, "foo"] par exemple elle pouvait me retourner un [integer,string] ce qui est
-	interdit. mais en séparant les 2 maintenant c'est bon. hum peut etre les nommer de maniere plus générale ...
-	j'y réfléchirai.
+	J'ai sï¿½parer en 2 la fonction find car elle ne respectait pas les consignes du projet ï¿½ savoir 
+	ï¿½ partir d'un [2, "foo"] par exemple elle pouvait me retourner un [integer,string] ce qui est
+	interdit. mais en sï¿½parant les 2 maintenant c'est bon. hum peut etre les nommer de maniere plus gï¿½nï¿½rale ...
+	j'y rï¿½flï¿½chirai.
+	
+08/01/2014 : Vinou
+	Ajout et implementation de LindaServer avec Monoserveur. Implementation de LindaClient, il manque plus que Eventregister
+	qui est le plus dur Ã  faire dans cette partie.

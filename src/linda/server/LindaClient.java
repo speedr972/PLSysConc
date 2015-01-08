@@ -1,5 +1,9 @@
 package linda.server;
 
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.util.Collection;
 
 import linda.Callback;
@@ -10,69 +14,110 @@ import linda.Tuple;
  * It implements the Linda interface and propagates everything to the server it is connected to.
  * */
 public class LindaClient implements Linda {
-	
+	MonoServerLinda serverLinda;
     /** Initializes the Linda implementation.
      *  @param serverURI the URI of the server, e.g. "//localhost:4000/LindaServer".
      */
     public LindaClient(String serverURI) {
-        // TO BE COMPLETED
-    }
+        try {
+			this.serverLinda = (MonoServerLinda)Naming.lookup(serverURI);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (NotBoundException e) {
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+    } 
 
-	@Override
 	public void write(Tuple t) {
-		// TODO Auto-generated method stub
-		
+		try {
+			serverLinda.write(t);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
 	}
 
-	@Override
 	public Tuple take(Tuple template) {
-		// TODO Auto-generated method stub
-		return null;
+		Tuple t = null;
+		try {
+			t = serverLinda.take(template);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		return t;
 	}
 
-	@Override
+	
 	public Tuple read(Tuple template) {
-		// TODO Auto-generated method stub
-		return null;
+		Tuple t = null;
+		try {
+			t = serverLinda.read(template);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		return t;
 	}
 
-	@Override
+	
 	public Tuple tryTake(Tuple template) {
-		// TODO Auto-generated method stub
-		return null;
+		Tuple t = null;
+		try {
+			serverLinda.tryTake(template);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		return t;
 	}
 
-	@Override
+	
 	public Tuple tryRead(Tuple template) {
-		// TODO Auto-generated method stub
-		return null;
+		Tuple t = null;
+		try {
+			serverLinda.tryRead(template);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		return t;
 	}
 
-	@Override
+	
 	public Collection<Tuple> takeAll(Tuple template) {
-		// TODO Auto-generated method stub
-		return null;
+		Collection<Tuple> Ct = null;
+		try {
+			Ct = serverLinda.takeAll(template);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		return Ct;
 	}
 
-	@Override
+	
 	public Collection<Tuple> readAll(Tuple template) {
-		// TODO Auto-generated method stub
-		return null;
+		Collection<Tuple> Ct = null;
+		try {
+			Ct = serverLinda.readAll(template);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		return Ct;
 	}
 
-	@Override
+	
 	public void eventRegister(eventMode mode, eventTiming timing,
 			Tuple template, Callback callback) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
+	
 	public void debug(String prefix) {
-		// TODO Auto-generated method stub
+		try {
+			serverLinda.debug(prefix);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
 		
 	}
-    
-    // TO BE COMPLETED
 
 }
