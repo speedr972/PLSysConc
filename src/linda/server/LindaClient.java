@@ -14,13 +14,13 @@ import linda.Tuple;
  * It implements the Linda interface and propagates everything to the server it is connected to.
  * */
 public class LindaClient implements Linda {
-	MonoServerLinda serverLinda;
+	/*MonoServer*/LindaServer serverLinda;
     /** Initializes the Linda implementation.
      *  @param serverURI the URI of the server, e.g. "//localhost:4000/LindaServer".
      */
     public LindaClient(String serverURI) {
         try {
-			this.serverLinda = (MonoServerLinda)Naming.lookup(serverURI);
+			this.serverLinda = (LindaServer)Naming.lookup(serverURI);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (NotBoundException e) {

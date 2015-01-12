@@ -1,18 +1,31 @@
 package linda.server;
 
+import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.rmi.Naming;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.Collection;
 
 import linda.Callback;
 import linda.Tuple;
 import linda.shm.CentralizedLinda;
 
-public class MonoServerLinda implements LindaServer {
+public class MonoServerLinda extends UnicastRemoteObject implements LindaServer {
 	
 	private CentralizedLinda linda;
+	private String uri;
 	
-	public MonoServerLinda(){
+	public MonoServerLinda(String uri) throws RemoteException{
+		this.uri = uri;
 		this.linda = new CentralizedLinda();
+	}
+	
+	public void lancer() throws RemoteException, MalformedURLException {
+		Registry registry = LocateRegistry.createRegistry(5005);
+		Naming.rebind(this.uri,this);
 	}
 
 	public void write(Tuple t) throws RemoteException {
