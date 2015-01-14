@@ -1,19 +1,13 @@
 package linda.test;
 
-import java.net.MalformedURLException;
-import java.rmi.RemoteException;
-
 import linda.*;
-import linda.server.LindaServer;
 
 public class BasicTest1 {
 
-    public static void main(String[] a) throws RemoteException, MalformedURLException {
-        
-    	linda.server.MonoServerLinda serv = new linda.server.MonoServerLinda("//localhost:5004/aaa");  	
-    	serv.lancer();
+    public static void main(String[] a) {
+                
         //final Linda linda = new linda.shm.CentralizedLinda();
-         final Linda linda = new linda.server.LindaClient("//localhost:5004/aaa");
+         final Linda linda = new linda.server.LindaClient("//localhost:4000/MonServeur");
                 
         new Thread() {
             public void run() {

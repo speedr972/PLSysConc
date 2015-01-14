@@ -150,8 +150,8 @@ public class CentralizedLinda implements Linda {
 		
 	}
 
-	/* trouve le tuple recherché dans le serveur où sont stocké les tuples
-	 * @param Tuple le tuple recherché
+	/* trouve le tuple recherchï¿½ dans le serveur oï¿½ sont stockï¿½ les tuples
+	 * @param Tuple le tuple recherchï¿½
 	 * @return Tuple
 	 */
 	public Tuple findTupleSpace(Tuple template, Iterator<Tuple> it){
@@ -167,8 +167,8 @@ public class CentralizedLinda implements Linda {
 		return ft;
 	}
 	
-	/* trouve le tuple recherché dans la file d'attente des callback où sont stocké les tuples
-	 * @param Tuple le tuple recherché
+	/* trouve le tuple recherchï¿½ dans la file d'attente des callback oï¿½ sont stockï¿½ les tuples
+	 * @param Tuple le tuple recherchï¿½
 	 * @return Tuple
 	 */
 	public Tuple findTupleCall(Tuple template, Iterator<Tuple> it){
@@ -201,8 +201,8 @@ public class CentralizedLinda implements Linda {
 		}
 	}
 
-	/* à partir d'un motif, cherche le callback à réveiller et le réveille. si plusieurs callback
-	 * sont présent pour le même motif, tant que l'eventmode des callback n'est pas read, on les réveille
+	/* ï¿½ partir d'un motif, cherche le callback ï¿½ rï¿½veiller et le rï¿½veille. si plusieurs callback
+	 * sont prï¿½sent pour le mï¿½me motif, tant que l'eventmode des callback n'est pas read, on les rï¿½veille
 	 * tous.
 	 * @param Tuple
 	 */
@@ -225,5 +225,21 @@ public class CentralizedLinda implements Linda {
 				this.waitingCallBack.remove(template);
 			}
 		}		
+	}
+
+	public List<Tuple> getTupleSpace() {
+		return tupleSpace;
+	}
+
+	public void setTupleSpace(List<Tuple> tupleSpace) {
+		this.tupleSpace = tupleSpace;
+	}
+
+	public Map<Tuple, Collection<CallEvent>> getWaitingCallBack() {
+		return waitingCallBack;
+	}
+
+	public void setWaitingCallBack(Map<Tuple, Collection<CallEvent>> waitingCallBack) {
+		this.waitingCallBack = waitingCallBack;
 	}
 }

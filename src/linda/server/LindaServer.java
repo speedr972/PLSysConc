@@ -6,6 +6,7 @@ import java.util.Collection;
 
 import linda.Callback;
 import linda.Tuple;
+import linda.shm.CentralizedLinda;
 
 public interface LindaServer extends Remote{
 
@@ -19,4 +20,5 @@ public interface LindaServer extends Remote{
 
     public void eventRegister(LindaClient.eventMode mode, LindaClient.eventTiming timing, Tuple template, Callback callback)throws RemoteException;
     public void debug(String prefix)throws RemoteException;
+
 }
