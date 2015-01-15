@@ -22,11 +22,18 @@ public class MultiServerLinda extends UnicastRemoteObject implements LindaServer
 
 	//Chaque serveur connaît les serveurs auquels il est relié (cf figure 2 du sujet du projet)
 	private Collection<MultiServerLinda> serveurs;
+	private String uri;
 	
 	private CentralizedLinda linda;
 	
-	public MultiServerLinda() throws RemoteException{
+	public MultiServerLinda(String uri) throws RemoteException{
+		this.uri = uri;
 		this.linda = new CentralizedLinda();
+	}
+	
+	public void lancer() throws RemoteException, MalformedURLException {
+		Registry registry = LocateRegistry.createRegistry(5005);
+		Naming.rebind(this.uri,this);
 	}
 	
 	public void ajouterServeur(String serverURI) throws RemoteException, MalformedURLException, NotBoundException{

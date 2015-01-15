@@ -14,7 +14,8 @@ import linda.Tuple;
  * It implements the Linda interface and propagates everything to the server it is connected to.
  * */
 public class LindaClient implements Linda {
-	LindaServer serverLinda;
+	/*MonoServer*/
+	private static LindaServer serverLinda;
     /** Initializes the Linda implementation.
      *  @param serverURI the URI of the server, e.g. "//localhost:4000/LindaServer".
      */
@@ -104,15 +105,7 @@ public class LindaClient implements Linda {
 	}
 
 	
-	public void eventRegister(eventMode mode, eventTiming timing,
-			Tuple template, Callback callback) {
-		try {
-			serverLinda.eventRegister(mode, timing, template, callback);
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+	
 
 	
 	public void debug(String prefix) {
@@ -122,6 +115,26 @@ public class LindaClient implements Linda {
 			e.printStackTrace();
 		}
 		
+	}
+
+	@Override
+	public void eventRegister(final eventMode mode, final eventTiming timing,
+			final Tuple template, final Callback callback) {
+		// TODO Auto-generated method stub
+		new Thread() {
+			public void run() {
+				try {
+					Tuple t = LindaClient.serverLinda.waitEvent(mode, timing,
+							template);
+					// t.toString();
+					callback.call(t);
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}.start();
+
 	}
 
 }

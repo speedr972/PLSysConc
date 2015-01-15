@@ -3,7 +3,7 @@ package linda.shm;
 import linda.Callback;
 import linda.Linda.eventMode;
 
-public class CallEvent {
+public class CallEvent{
 private Callback callback;
 private eventMode event;
 

@@ -4,9 +4,9 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Collection;
 
-import linda.Callback;
+import linda.Linda.eventMode;
+import linda.Linda.eventTiming;
 import linda.Tuple;
-import linda.shm.CentralizedLinda;
 
 public interface LindaServer extends Remote{
 
@@ -18,7 +18,7 @@ public interface LindaServer extends Remote{
 	public Collection<Tuple> takeAll(Tuple template)throws RemoteException;
     public Collection<Tuple> readAll(Tuple template)throws RemoteException;
 
-    public void eventRegister(LindaClient.eventMode mode, LindaClient.eventTiming timing, Tuple template, Callback callback)throws RemoteException;
+//    public void eventRegister(LindaClient.eventMode mode, LindaClient.eventTiming timing, Tuple template, Callback callback)throws RemoteException;
+    public Tuple waitEvent(eventMode mode, eventTiming timing, Tuple template) throws RemoteException;
     public void debug(String prefix)throws RemoteException;
-
 }

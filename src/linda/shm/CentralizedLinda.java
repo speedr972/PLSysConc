@@ -37,7 +37,7 @@ public class CentralizedLinda implements Linda {
 		this.tupleSpace.add(t);
 		if(file>0){
 			this.autorisation.signalAll();
-		}		
+		}
 		this.trouveCallBack(t);
 		moniteur.unlock();
 	}
@@ -119,7 +119,7 @@ public class CentralizedLinda implements Linda {
 		Tuple inter ;
 		if( timing== eventTiming.IMMEDIATE){
 			if(mode ==eventMode.TAKE){
-				inter = tryTake(template);				
+				inter = tryTake(template);
 			}
 			else{
 				inter = tryRead(template);
@@ -128,10 +128,12 @@ public class CentralizedLinda implements Linda {
 				callback.call(inter);
 			}
 			else{
+				//
 				this.enregistrerCall(callback, mode, template);
 			}			
 		}
 		else{
+			//
 			this.enregistrerCall(callback, mode, template);
 		}
 
@@ -225,21 +227,5 @@ public class CentralizedLinda implements Linda {
 				this.waitingCallBack.remove(template);
 			}
 		}		
-	}
-
-	public List<Tuple> getTupleSpace() {
-		return tupleSpace;
-	}
-
-	public void setTupleSpace(List<Tuple> tupleSpace) {
-		this.tupleSpace = tupleSpace;
-	}
-
-	public Map<Tuple, Collection<CallEvent>> getWaitingCallBack() {
-		return waitingCallBack;
-	}
-
-	public void setWaitingCallBack(Map<Tuple, Collection<CallEvent>> waitingCallBack) {
-		this.waitingCallBack = waitingCallBack;
 	}
 }
