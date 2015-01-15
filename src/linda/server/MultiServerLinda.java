@@ -7,6 +7,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 import linda.Callback;
 import linda.Tuple;
@@ -22,18 +23,17 @@ public class MultiServerLinda extends UnicastRemoteObject implements LindaServer
 
 	//Chaque serveur connaît les serveurs auquels il est relié (cf figure 2 du sujet du projet)
 	private Collection<MultiServerLinda> serveurs;
-	private String uri;
+	private Collection<String> uri;
+	private String monUri;
 	
 	private CentralizedLinda linda;
 	
-	public MultiServerLinda(String uri) throws RemoteException{
-		this.uri = uri;
-		this.linda = new CentralizedLinda();
-	}
-	
-	public void lancer() throws RemoteException, MalformedURLException {
-		Registry registry = LocateRegistry.createRegistry(5005);
-		Naming.rebind(this.uri,this);
+	public MultiServerLinda(String monUri) throws RemoteException{
+		//this.linda = new CentralizedLinda();
+		this.uri = new LinkedList<String>();
+		uri.add("//localhost:4OOO/s1");
+		uri.add("//localhost:4OO0/s2");
+		this.monUri = monUri;
 	}
 	
 	public void ajouterServeur(String serverURI) throws RemoteException, MalformedURLException, NotBoundException{
@@ -43,30 +43,44 @@ public class MultiServerLinda extends UnicastRemoteObject implements LindaServer
 	}
 	
 	//Read sur les espaces de tuples des autres serveurs (via leur méthode)
-	public Tuple readServeurs(Tuple template) throws RemoteException {
-		Iterator<MultiServerLinda> it = serveurs.iterator();
+	public Tuple readServeurs(Tuple template) throws RemoteException, MalformedURLException, NotBoundException {
+		//Iterator<MultiServerLinda> it = serveurs.iterator();
+		Iterator<String> it = uri.iterator();
+
 		Tuple retour = null;
 		boolean nonTrouve = true;
 		while(it.hasNext() && nonTrouve) {
-			MultiServerLinda s =(MultiServerLinda) it.next();
+			
+			//MultiServerLinda s =(MultiServerLinda) it.next();
+			String next = it.next();
+			if (!(next.equals(this.monUri))) {
+				
+			MultiServerLinda s = (MultiServerLinda) Naming.lookup(next);
 			retour = s.readLocal(template);
 			if (retour != null) {
 				nonTrouve = false;
+			}
 			}
 		}
 		return retour;
 	}
 	
 	//Take sur les espaces de tuples des autres serveurs (via leur méthode)
-	public Tuple takeServeurs(Tuple template) throws RemoteException {
-		Iterator<MultiServerLinda> it = serveurs.iterator();
+	public Tuple takeServeurs(Tuple template) throws RemoteException, MalformedURLException, NotBoundException {
+		//Iterator<MultiServerLinda> it = serveurs.iterator();
+		Iterator<String> it = uri.iterator();
 		Tuple retour = null;
 		boolean nonTrouve = true;
 		while(it.hasNext() && nonTrouve) {
-			MultiServerLinda s =(MultiServerLinda) it.next();
-			retour = s.takeLocal(template);
-			if (retour != null) {
-				nonTrouve = false;
+			//MultiServerLinda s =(MultiServerLinda) it.next();
+			
+			String next = it.next();
+			if (!(next.equals(this.monUri))) {
+				MultiServerLinda s = (MultiServerLinda) Naming.lookup(it.next());
+				retour = s.takeLocal(template);
+				if (retour != null) {
+					nonTrouve = false;
+				}
 			}
 		}
 		return retour;
@@ -78,19 +92,27 @@ public class MultiServerLinda extends UnicastRemoteObject implements LindaServer
 	}
 	
 	//Take sur l'espace de tuple local puis sur les autres s'il n'y a pas de résultat
-	public Tuple take(Tuple template) throws RemoteException{
+	public Tuple take(Tuple template) throws RemoteException {
 		Tuple retour = this.linda.take(template);
 		if (retour == null) {
-			retour = readServeurs(template);
+			try {
+				retour = readServeurs(template);
+			} catch (Exception e) {
+				e.printStackTrace();
+			} 
 		}
 		return retour;
 	}
 
 	//Read sur l'espace de tuple local puis sur les autres s'il n'y a pas de résultat
-	public Tuple read(Tuple template) throws RemoteException{
+	public Tuple read(Tuple template) throws RemoteException {
 		Tuple retour = this.linda.read(template);
 		if (retour == null) {
-			retour = readServeurs(template);
+			try {
+				retour = readServeurs(template);
+			} catch (Exception e) {
+				e.printStackTrace();
+			} 
 		}
 		return retour;
 	}
@@ -130,5 +152,17 @@ public class MultiServerLinda extends UnicastRemoteObject implements LindaServer
 	public void debug(String prefix) throws RemoteException{
 		this.linda.debug(prefix);
 	}
+	
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		try {			
+			MultiServerLinda s1 = new MultiServerLinda("//localhost:4OOO/s1");
+			MultiServerLinda s2 = new MultiServerLinda("//localhost:4OO0/s2");
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+
+	}
+
 
 }
