@@ -33,6 +33,7 @@ public class LindaClient implements Linda {
 
 	public void write(Tuple t) {
 		try {
+			System.out.println(t + "dans le client");
 			serverLinda.write(t);
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -117,7 +118,7 @@ public class LindaClient implements Linda {
 		
 	}
 
-	
+	@Override
 	public void eventRegister(final eventMode mode, final eventTiming timing,
 			final Tuple template, final Callback callback) {
 		// TODO Auto-generated method stub

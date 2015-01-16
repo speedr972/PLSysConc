@@ -48,12 +48,12 @@ public class TestAsyschronousClientServeur {
         System.out.println("(2) write: " + t3);
         linda.write(t3);
         
-        try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//        try {
+//			Thread.sleep(2000);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
         
         Tuple t4 = new Tuple(72, "world");
         System.out.println("(2) write: " + t4);

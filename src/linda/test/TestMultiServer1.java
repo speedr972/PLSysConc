@@ -3,12 +3,11 @@ package linda.test;
 import linda.Linda;
 import linda.Tuple;
 
-
 public class TestMultiServer1 {
 
 	public static void main(String[] args) {
-		final Linda linda = new linda.server.LindaClient("//localhost:4001/sun");
-        final Linda linda2 = new linda.server.LindaClient("//localhost:4002/sdeux");      
+		final Linda linda = new linda.server.LindaClient("//localhost:4001/multi");
+        final Linda linda2 = new linda.server.LindaClient("//localhost:4002/multi");      
        new Thread() {
            public void run() {
                try {
@@ -31,11 +30,18 @@ public class TestMultiServer1 {
                    e.printStackTrace();
                }
 
+               if(linda2==null){
+            	   System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+               }else{
+            	   System.out.println("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
+               }
                Tuple t1 = new Tuple(4, 5);
                System.out.println("(2) write: " + t1);
                linda2.write(t1);
 
                Tuple t11 = new Tuple(4, 5);
+               if(t11==null){
+            	   System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
                System.out.println("(2) write: " + t11);
                linda2.write(t11);
 
@@ -49,9 +55,11 @@ public class TestMultiServer1 {
                                
                linda.debug("(2)");
 
+               }
            }
        }.start();
                
-   }
+   
 
+}
 }
