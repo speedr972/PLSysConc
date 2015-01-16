@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -17,17 +20,17 @@ import linda.Tuple;
 /** Shared memory implementation of Linda. */
 public class CentralizedLinda implements Linda {
 	private Lock moniteur;
-	private List<Tuple> tupleSpace;
+	private BlockingQueue<Tuple> tupleSpace;
 	private Condition autorisation;
 	private int file = 0;
-	private Map<Tuple, Collection<CallEvent>>  waitingCallBack = new HashMap<Tuple, Collection<CallEvent>>();
+	private Map<Tuple, BlockingQueue<CallEvent>>  waitingCallBack = new HashMap<Tuple, BlockingQueue<CallEvent>>();
 	
 		
 	
 
     public CentralizedLinda() {
     	this.moniteur = new ReentrantLock();
-    	this.tupleSpace = new ArrayList<Tuple>();
+    	this.tupleSpace = new LinkedBlockingQueue<Tuple>();
     	this.autorisation = this.moniteur.newCondition();
     }
 
@@ -55,7 +58,9 @@ public class CentralizedLinda implements Linda {
 		}
 		file--;
 	}
-	Tuple inter = tupleSpace.remove(tupleSpace.indexOf(findTupleSpace(template, this.tupleSpace.iterator())));
+	Tuple inter = null;
+	inter = this.findTupleSpace(template, this.tupleSpace.iterator());
+	this.tupleSpace.remove(inter);
 	moniteur.unlock();
 	return inter;
 		
@@ -83,7 +88,7 @@ public class CentralizedLinda implements Linda {
 		// TODO Auto-generated method stub
 		Tuple t = this.findTupleSpace(template,this.tupleSpace.iterator());
 		if(t != null){
-			this.tupleSpace.remove(this.tupleSpace.indexOf(t));
+			this.tupleSpace.remove(t);
 		}
 		return t;
 	}
@@ -101,7 +106,7 @@ public class CentralizedLinda implements Linda {
 
 	public Collection<Tuple> readAll(Tuple template) {
 		Collection<Tuple> listTuple = new ArrayList<Tuple>();
-		Iterator<Tuple> it = tupleSpace.listIterator();
+		Iterator<Tuple> it = tupleSpace.iterator();
 		Tuple inter = new Tuple();
 		
 		while(it.hasNext()){
@@ -194,7 +199,7 @@ public class CentralizedLinda implements Linda {
 	public void enregistrerCall(Callback callback, eventMode e, Tuple tuple) {
 		CallEvent inter = new CallEvent(callback, e);
 		if (this.waitingCallBack.get(tuple)== null){
-			List<CallEvent> intermediaire = new ArrayList<CallEvent>();
+			BlockingQueue<CallEvent> intermediaire = new LinkedBlockingQueue<CallEvent>();
 			intermediaire.add(inter);
 			this.waitingCallBack.put(tuple, intermediaire);
 		}
@@ -211,10 +216,10 @@ public class CentralizedLinda implements Linda {
 	public void trouveCallBack(Tuple template){
 		Iterator<Tuple> it = this.waitingCallBack.keySet().iterator();
 		Tuple Ituple = this.findTupleCall(template, it);
-		ArrayList<CallEvent> inter = (ArrayList<CallEvent>) this.waitingCallBack.get(Ituple);
+		LinkedBlockingQueue<CallEvent> inter = (LinkedBlockingQueue<CallEvent>) this.waitingCallBack.get(Ituple);
 		Boolean isTake = false;
-		if(inter != null){
-			Iterator<CallEvent> iterator = inter.listIterator();
+		if(inter != null){			
+			Iterator<CallEvent> iterator = inter.iterator();
 			while(iterator.hasNext() && !isTake){
 				CallEvent event = iterator.next();
 				if(event.getEvent()== eventMode.TAKE){

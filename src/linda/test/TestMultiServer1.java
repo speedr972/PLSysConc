@@ -1,3 +1,5 @@
+package linda.test;
+
 import linda.Linda;
 import linda.Tuple;
 
