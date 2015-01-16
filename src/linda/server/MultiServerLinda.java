@@ -4,6 +4,8 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Collection;
 import java.util.Iterator;
@@ -31,8 +33,8 @@ public class MultiServerLinda extends UnicastRemoteObject implements LindaServer
 	public MultiServerLinda(String monUri) throws RemoteException{
 		//this.linda = new CentralizedLinda();
 		this.uri = new LinkedList<String>();
-		uri.add("//localhost:4OOO/s1");
-		uri.add("//localhost:4OO0/s2");
+		uri.add("//localhost:4OO1/sun");
+		uri.add("//localhost:4OO2/sdeux");
 		this.monUri = monUri;
 	}
 	
@@ -153,12 +155,26 @@ public class MultiServerLinda extends UnicastRemoteObject implements LindaServer
 		this.linda.debug(prefix);
 	}
 	
+//	public void lancer() throws RemoteException, MalformedURLException {
+//		Registry registry = LocateRegistry.createRegistry(4002);
+//		Naming.rebind(this.monUri,this);
+//	}
+	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		try {			
-			MultiServerLinda s1 = new MultiServerLinda("//localhost:4OOO/s1");
-			MultiServerLinda s2 = new MultiServerLinda("//localhost:4OO0/s2");
-		} catch (RemoteException e) {
+		try {
+			
+			LindaServer sun = new MultiServerLinda("//localhost:4OO1/sun");
+			Registry registry = LocateRegistry.createRegistry(4001);
+			Naming.rebind("//localhost:4OO1/sun", sun);
+			
+			
+			LindaServer sdeux = new MultiServerLinda("//localhost:4OO2/sdeux");
+			Registry registry2 = LocateRegistry.createRegistry(4002);
+			Naming.rebind("//localhost:4OO2/sdeux", sdeux);
+
+			
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
