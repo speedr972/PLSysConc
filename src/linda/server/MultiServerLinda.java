@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import linda.Callback;
-import linda.Linda;
 import linda.Linda.eventMode;
 import linda.Linda.eventTiming;
 import linda.Tuple;
@@ -37,8 +36,8 @@ public class MultiServerLinda extends UnicastRemoteObject implements LindaServer
 	public MultiServerLinda(String monUri) throws RemoteException{
 		this.linda = new CentralizedLinda();
 		this.uri = new LinkedList<String>();
-		uri.add("//localhost:4OO1/multi");
-		uri.add("//localhost:4OO2/multi");
+		uri.add("//localhost:4001/multi4001");
+		uri.add("//localhost:4002/multi4002");
 		this.monUri = monUri;
 	}
 	
@@ -82,7 +81,7 @@ public class MultiServerLinda extends UnicastRemoteObject implements LindaServer
 			
 			String next = it.next();
 			if (!(next.equals(this.monUri))) {
-				MultiServerLinda s = (MultiServerLinda) Naming.lookup(it.next());
+				LindaServer s = (LindaServer) Naming.lookup(next);
 				retour = s.tryTake(template);
 				if (retour != null) {
 					nonTrouve = false;
@@ -94,80 +93,84 @@ public class MultiServerLinda extends UnicastRemoteObject implements LindaServer
 
 
 	public void write(Tuple t) throws RemoteException {
-		if(t!=null){
-			System.out.println("tuple 00" + t);
-		}else{
+		if (t != null) {
+			System.out.println("tuple O00" + t);
+		} else {
 			System.out.println("tuple null");
 		}
 		System.out.println("--------------------------------------------");
 		this.linda.write(t);
-		MultiServerLinda m;
-		
+		LindaServer m;
+
 		Iterator itserv = this.uri.iterator();
-		for(String url : this.uri){
-			if(!url.equals(this.monUri)){
+		for (String url : this.uri) {
+			if (!url.equals(this.monUri)) {
 				try {
-					m = (MultiServerLinda)Naming.lookup(url);
+					//System.out.println(url);
+
+					//System.out.println("--" + monUri);
+					m = (LindaServer) Naming.lookup(url);
+					//System.out.println("Connexion au serveur " + url
+					//		+ " faite, envoi d'un signal");
 					m.signal();
 				} catch (MalformedURLException | NotBoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+
 			}
 		}
-		
+
 	}
 	
 	//tryTake sur l'espace de tuple local puis sur les autres  et s'il n'y a pas de résultat, s'endort
 	
 	public Tuple take(Tuple template) throws RemoteException {
 		Tuple retour = null;
-		boolean nonNull = false;
-		
-		while(!nonNull){
-		retour = this.tryTakeLocal(template);
-		if (retour == null) {
-			try {
-				retour = tryTakeServeurs(template);
-				if(retour==null){
-					this.await();
-				}else{
-					nonNull = true;
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			} 
+		boolean recommence = true;
+		while (recommence) {
+			retour = tryTake(template);
+			if (retour == null) {
+				this.await();
+			} else {
+				recommence = false;
+			}
+
 		}
-		else{
-			nonNull = true;
-		}
-		}
+		System.out.println("take done : " + retour);
+		// System.out.print(template + "done");
 		return retour;
+	}
+	
+	
+
+	public String getMonUri() {
+		return monUri;
+	}
+
+	public void setMonUri(String monUri) {
+		this.monUri = monUri;
+	}
+
+	public CentralizedLinda getLinda() {
+		return linda;
+	}
+
+	public void setLinda(CentralizedLinda linda) {
+		this.linda = linda;
 	}
 
 	//tryRead sur l'espace de tuple local puis sur les autres  et s'il n'y a pas de résultat, s'endort
 	public Tuple read(Tuple template) throws RemoteException {
 		Tuple retour = null;
-		boolean nonNull = false;
-		
-		while(!nonNull){
-		retour = this.tryReadLocal(template);
-		if (retour == null) {
-			try {
-				retour = tryReadServeurs(template);
-				if(retour==null){
-					this.await();
-				}else{
-					nonNull = true;
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			} 
-		}
-		else{
-			nonNull = true;
-		}
+		boolean recommence = true;
+		while (recommence) {
+			retour = tryRead(template);
+			if (retour == null) {
+				this.await();
+			} else {
+				recommence = false;
+			}
 		}
 		return retour;
 	}
@@ -183,29 +186,96 @@ public class MultiServerLinda extends UnicastRemoteObject implements LindaServer
 	}
 
 	//tryTake sur soi Et tous les serveurs
-	public Tuple tryTake(Tuple template) throws RemoteException{
-		 Tuple retour = this.tryTakeLocal(template);
+	public Tuple tryTake(Tuple template) throws RemoteException {
+		// Tuple retour = this.tryTakeLocal(template);
+		// if (retour == null) {
+		// try {
+		// retour = tryTakeServeurs(template);
+		// } catch (Exception e) {
+		// e.printStackTrace();
+		// }
+		// }
+		// return retour;
+
+		Tuple retour = null;
+
+		retour = this.linda.tryTake(template);
 		if (retour == null) {
 			try {
-				retour = tryTakeServeurs(template);
+				// retour = tryTakeServeurs(template);
+				// /////////////////////////////////////
+				Iterator<String> it = uri.iterator();
+				boolean nonTrouve = true;
+				while (it.hasNext() && nonTrouve) {
+					// MultiServerLinda s =(MultiServerLinda) it.next();
+
+					String next = it.next();
+					if (!(next.equals(this.monUri))) {
+						LindaServer s = (LindaServer) Naming
+								.lookup(next);
+						System.out.println("lookup done");
+						retour = s.tryTakeLocal(template);
+						if (retour != null) {
+							nonTrouve = false;
+						}
+					}
+				}
+				// //////////////////////////////////
+
 			} catch (Exception e) {
 				e.printStackTrace();
-			} 
+			}
+		} else {
+			
 		}
+
+		System.out.println("take done : " + retour);
+		// System.out.print(template + "done");
 		return retour;
 	}
 
 	//tryRead sur soi Et tous les serveurs
 	public Tuple tryRead(Tuple template) throws RemoteException{
-		 Tuple retour = this.tryReadLocal(template);
-			if (retour == null) {
-				try {
-					retour = tryReadServeurs(template);
-				} catch (Exception e) {
-					e.printStackTrace();
-				} 
+		
+		Tuple retour = null;
+
+		retour = this.linda.tryRead(template);
+		if (retour == null) {
+			try {
+				// retour = tryTakeServeurs(template);
+				// /////////////////////////////////////
+				Iterator<String> it = uri.iterator();
+				boolean nonTrouve = true;
+				while (it.hasNext() && nonTrouve) {
+					// MultiServerLinda s =(MultiServerLinda) it.next();
+
+					String next = it.next();
+					if (!(next.equals(this.monUri))) {
+						LindaServer s = (LindaServer) Naming
+								.lookup(next);
+						System.out.println("lookup done");
+						retour = s.tryReadLocal(template);
+						if (retour != null) {
+							nonTrouve = false;
+						}
+					}
+				}
+				// //////////////////////////////////
+
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-			return retour;
+		} else {
+			
+		}
+
+		System.out.println("read done : " + retour);
+		try {
+            Thread.sleep(6000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+		return retour;
 	}
 
 	public Collection<Tuple> takeAll(Tuple template) throws RemoteException{
@@ -235,7 +305,7 @@ public class MultiServerLinda extends UnicastRemoteObject implements LindaServer
 		// TODO Auto-generated method stub
 		try {
 			int port = Integer.parseInt(args[0]);
-			String URL= "//localhost:"+port+"/multi";
+			String URL= "//localhost:"+args[0]+"/multi"+port;
 			
 			LindaServer sun = new MultiServerLinda(URL);
 			Registry registry = LocateRegistry.createRegistry(port);

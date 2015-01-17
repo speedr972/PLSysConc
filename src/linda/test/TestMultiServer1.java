@@ -6,26 +6,36 @@ import linda.Tuple;
 public class TestMultiServer1 {
 
 	public static void main(String[] args) {
-		final Linda linda = new linda.server.LindaClient("//localhost:4001/multi");
-        final Linda linda2 = new linda.server.LindaClient("//localhost:4002/multi");      
-       new Thread() {
+		
+        
+		     
+		
+		
+		new Thread() {
            public void run() {
+        	   final Linda linda = new linda.server.LindaClient("//localhost:4001/multi4001");
                try {
-                   Thread.sleep(2000);
+                   Thread.sleep(1000);
                } catch (InterruptedException e) {
                    e.printStackTrace();
                }
-               Tuple motif = new Tuple(Integer.class, String.class);
-               Tuple res = linda.take(motif);
-               System.out.println("(1) Resultat:" + res);
+//               Tuple motif = new Tuple(Integer.class, String.class);
+//               Tuple res = linda.take(motif);
+//               System.out.println("(1) Resultat:" + res);
+               Tuple t1 = new Tuple(194, 66);
+               System.out.println("(1) write: " + t1);
+               linda.write(t1);
+               
                linda.debug("(1)");
            }
        }.start();
                
        new Thread() {
            public void run() {
+        	   final Linda linda2 = new linda.server.LindaClient("//localhost:4001/multi4002"); 
                try {
-                   Thread.sleep(2);
+            	   
+                   Thread.sleep(3000);
                } catch (InterruptedException e) {
                    e.printStackTrace();
                }
@@ -38,10 +48,12 @@ public class TestMultiServer1 {
                Tuple t1 = new Tuple(4, 5);
                System.out.println("(2) write: " + t1);
                linda2.write(t1);
+               System.out.println("write t1 done");
 
                Tuple t11 = new Tuple(4, 5);
                if(t11==null){
             	   System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+               }
                System.out.println("(2) write: " + t11);
                linda2.write(t11);
 
@@ -53,13 +65,13 @@ public class TestMultiServer1 {
                System.out.println("(2) write: " + t3);
                linda2.write(t3);
                                
-               linda.debug("(2)");
+               linda2.debug("(2)");
 
                }
-           }
-       }.start();
+           }.start();
+       }
                
    
 
 }
-}
+

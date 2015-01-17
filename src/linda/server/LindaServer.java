@@ -4,6 +4,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Collection;
 
+import linda.Linda;
 import linda.Linda.eventMode;
 import linda.Linda.eventTiming;
 import linda.Tuple;
@@ -21,4 +22,7 @@ public interface LindaServer extends Remote{
 //    public void eventRegister(LindaClient.eventMode mode, LindaClient.eventTiming timing, Tuple template, Callback callback)throws RemoteException;
     public Tuple waitEvent(eventMode mode, eventTiming timing, Tuple template) throws RemoteException;
     public void debug(String prefix)throws RemoteException;
+    public Tuple tryTakeLocal(Tuple template) throws RemoteException;
+    public Tuple tryReadLocal(Tuple template) throws RemoteException;
+    public void signal() throws RemoteException;
 }

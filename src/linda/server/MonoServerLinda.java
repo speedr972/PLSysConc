@@ -176,4 +176,22 @@ public class MonoServerLinda extends UnicastRemoteObject implements LindaServer 
 		
 
 	}
+
+	@Override
+	public Tuple tryTakeLocal(Tuple template) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Tuple tryReadLocal(Tuple template) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void signal() throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
 }
