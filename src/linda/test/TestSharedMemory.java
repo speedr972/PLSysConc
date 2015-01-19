@@ -1,7 +1,5 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+/**Tests unitaires sur memoire partagee*/
+
 package linda.test;
 
 import java.util.Collection;
@@ -10,15 +8,8 @@ import linda.Linda.eventMode;
 import linda.Linda.eventTiming;
 import linda.*;
 
-/**
- *
- * @author Alexandra Jacquet
- * @author Florian Vetu
- */
 public class TestSharedMemory {
-	/**
-	 * MyCallBack
-	 */
+	
 	private static class MyCallback11 implements Callback {
 		@Override
 		public void call(Tuple t) {
@@ -67,6 +58,8 @@ public class TestSharedMemory {
 				System.out.println("test1 take OK ");
 				System.out.println("(1) Resultat:" + res1);
 				linda.debug("(1)");
+				
+				
 				// ---------- test 2 -----------
 				System.out.println("---------- test2 read ----------");
 				// realisation d'un read bloquant
@@ -93,11 +86,12 @@ public class TestSharedMemory {
 				System.out.println("(9) write: " + t6);
 				linda.write(t6);
 				linda.debug("(3)");
+				
+				
 				// ------------ test 3 -----------------
 				System.out.println("---------- test3 tryTake ----------");
-				// réalisation d'un tryTake qui renvoi null
 				Tuple motif2 = new Tuple(String.class, Integer.class);
-				Tuple res3 = linda.tryTake(motif2);
+				Tuple res3 = linda.tryTake(motif2); //doit renvoyer null
 				if (res3 == null) {
 					System.out.println("test3 tryTake OK : try to take : "
 							+ motif2.toString());
@@ -105,10 +99,12 @@ public class TestSharedMemory {
 					System.out.println("test3 tryTake failed ");
 				}
 				linda.debug("(4)");
+				
+				
 				// ------------ test 4 -----------------
 				System.out.println("---------- test4 tryTake ----------");
 				// réalisation d'un tryTake qui renvoi un tuple
-				Tuple res4 = linda.tryTake(motif);
+				Tuple res4 = linda.tryTake(motif); //doit etre non null
 				if (res4 == null) {
 					System.out.println("test4 tryTake failed ");
 				} else {
@@ -117,6 +113,8 @@ public class TestSharedMemory {
 				}
 				System.out.println("(4) Resultat:" + res4);
 				linda.debug("(5)");
+				
+				
 				// ------------ test 5 -----------------
 				System.out.println("---------- test5 tryRead ----------");
 				// réalisation d'un tryRead qui renvoi un tuple
@@ -129,10 +127,12 @@ public class TestSharedMemory {
 				}
 				System.out.println("(5) Resultat:" + res5);
 				linda.debug("(6)");
+				
+				
 				// ------------ test 6 -----------------
 				System.out.println("---------- test6 tryRead ----------");
 				// réalisation d'un tryRead qui renvoi un tuple
-				Tuple res6 = linda.tryRead(motif2);
+				Tuple res6 = linda.tryRead(motif2); // doit etre null
 				if (res6 == null) {
 					System.out.println("test6 tryRead OK : try to read : "
 							+ motif2.toString());
@@ -140,6 +140,8 @@ public class TestSharedMemory {
 					System.out.println("test6 tryRead failed ");
 				}
 				linda.debug("(7)");
+				
+				
 				// ------------ test 7 -----------------
 				System.out.println("---------- test7 ReadAll ----------");
 				// réalisation d'un readAll
@@ -148,6 +150,8 @@ public class TestSharedMemory {
 						+ motif.toString() + " -> " + res7.toString());
 				System.out.println("test7 readAll OK ");
 				linda.debug("(8)");
+				
+				
 				// ------------ test 8 -----------------
 				System.out.println("---------- test8 TakeAll ----------");
 				// réalisation d'un takeAll
@@ -157,6 +161,8 @@ public class TestSharedMemory {
 						+ motif3.toString() + " -> " + res8.toString());
 				System.out.println("test8 takeAll OK ");
 				linda.debug("(8)");
+				
+				
 				// ------------ test 9 -----------------
 				System.out.println("---------- test9 TakeAll vide ----------");
 				// réalisation d'un takeAll
@@ -165,6 +171,8 @@ public class TestSharedMemory {
 						+ motif3.toString() + " -> " + res9.toString());
 				System.out.println("test9 takeAll vide OK ");
 				linda.debug("(9)");
+				
+				
 				// ------------ test 10 -----------------
 				System.out.println("---------- test10 ReadAll vide ----------");
 				// réalisation d'un readAll
@@ -173,6 +181,8 @@ public class TestSharedMemory {
 						+ motif3.toString() + " -> " + res10.toString());
 				System.out.println("test10 readAll vide OK ");
 				linda.debug("(10)");
+				
+				
 				// ------------ test 11 -----------------
 				System.out
 						.println("---------- test11 eventRegister - take immediat possible ----------");
@@ -181,6 +191,8 @@ public class TestSharedMemory {
 						motif, new AsynchronousCallback(new MyCallback11()));
 				System.out.println("test11 take immediat possible : test OK ");
 				linda.debug("(11)");
+				
+				
 				// ------------ test 12 -----------------
 				System.out
 						.println("---------- test12 eventRegister - take immediat pas possible ----------");
@@ -198,6 +210,8 @@ public class TestSharedMemory {
 				System.out.print("oooooooooooooooooooooooooooooooooooooooooo");
 			}
 		}.start();
+		
+		
 		// write d'un tuple attendu pour un take
 		new Thread() {
 			public void run() {
@@ -209,12 +223,14 @@ public class TestSharedMemory {
 				Tuple t1 = new Tuple(4, 5);
 				System.out.println("(1) write: " + t1);
 				linda.write(t1);
-				Tuple t2 = new Tuple(4, "test1");
+				Tuple t2 = new Tuple(4, "test1");//test1 : take bloquant
 				System.out.println("(2) write: " + t2);
 				linda.write(t2);
 				// le deuxieme tuple est bien pris et enlevé de la mémoire
 			}
 		}.start();
+		
+		
 		// write d'un tuple attendu pour le read
 		new Thread() {
 			public void run() {
@@ -223,7 +239,7 @@ public class TestSharedMemory {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				Tuple t3 = new Tuple(4, "test2");
+				Tuple t3 = new Tuple(4, "test2");//test2 : read bloquant
 				linda.write(t3);
 				System.out.println("(3) write: " + t3);
 			}

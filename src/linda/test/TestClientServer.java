@@ -1,21 +1,14 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+Test 2 clients sur un serveur
  */
 package linda.test;
 
 import java.util.Collection;
 import linda.*;
 
-/**
- *
- * @author Alexandra Jacquet
- * @author Florian Vetu
- */
+
 public class TestClientServer {
-	/**
-	 * MyCallBack
-	 */
+
 	private static class MyCallback11 implements Callback {
 		@Override
 		public void call(Tuple t) {
@@ -54,6 +47,7 @@ public class TestClientServer {
 				"//localhost:4000/MonServeur");
 		final Linda linda2 = new linda.server.LindaClient(
 				"//localhost:4000/MonServeur");
+		
 		// test take non existant
 		new Thread() {
 			public void run() {
@@ -73,6 +67,8 @@ public class TestClientServer {
 				System.out.println("test1 take OK ");
 				System.out.println("(1) Resultat:" + res1);
 				linda.debug("(1)");
+				System.out.println();
+				
 				// ---------- test 2 -----------
 				System.out.println("---------- test2 read ----------");
 				// realisation d'un read bloquant
@@ -99,11 +95,12 @@ public class TestClientServer {
 				System.out.println("(9) write: " + t6);
 				linda.write(t6);
 				linda.debug("(3)");
+				System.out.println();
 				
 				
 				// ------------ test 3 -----------------
 				System.out.println("---------- test3 tryTake ----------");
-				// réalisation d'un tryTake qui renvoi null
+				// réalisation d'un tryTake qui renvoie null
 				Tuple motif2 = new Tuple(String.class, Integer.class);
 				Tuple res3 = linda.tryTake(motif2);
 				if (res3 == null) {
@@ -113,11 +110,12 @@ public class TestClientServer {
 					System.out.println("test3 tryTake failed ");
 				}
 				linda.debug("(4)");
+				System.out.println();
 				
 				
 				// ------------ test 4 -----------------
 				System.out.println("---------- test4 tryTake ----------");
-				// réalisation d'un tryTake qui renvoi un tuple
+				// réalisation d'un tryTake qui renvoie un tuple
 				Tuple res4 = linda.tryTake(motif);
 				if (res4 == null) {
 					System.out.println("test4 tryTake failed ");
@@ -127,11 +125,12 @@ public class TestClientServer {
 				}
 				System.out.println("(4) Resultat:" + res4);
 				linda.debug("(5)");
+				System.out.println();
 				
 				
 				// ------------ test 5 -----------------
 				System.out.println("---------- test5 tryRead ----------");
-				// réalisation d'un tryRead qui renvoi un tuple
+				// réalisation d'un tryRead qui renvoie un tuple
 				Tuple res5 = linda.tryRead(motif);
 				if (res5 == null) {
 					System.out.println("test5 tryRead failed ");
@@ -141,11 +140,12 @@ public class TestClientServer {
 				}
 				System.out.println("(5) Resultat:" + res5);
 				linda.debug("(6)");
+				System.out.println();
 				
 				
 				// ------------ test 6 -----------------
 				System.out.println("---------- test6 tryRead ----------");
-				// réalisation d'un tryRead qui renvoi un tuple
+				// réalisation d'un tryRead qui renvoie null
 				Tuple res6 = linda.tryRead(motif2);
 				if (res6 == null) {
 					System.out.println("test6 tryRead OK : try to read : "
@@ -154,6 +154,9 @@ public class TestClientServer {
 					System.out.println("test6 tryRead failed ");
 				}
 				linda.debug("(7)");
+				System.out.println();
+				
+				
 				// ------------ test 7 -----------------
 				System.out.println("---------- test7 ReadAll ----------");
 				// réalisation d'un readAll
@@ -162,6 +165,9 @@ public class TestClientServer {
 						+ motif.toString() + " -> " + res7.toString());
 				System.out.println("test7 readAll OK ");
 				linda.debug("(8)");
+				System.out.println();
+				
+				
 				// ------------ test 8 -----------------
 				System.out.println("---------- test8 TakeAll ----------");
 				// réalisation d'un takeAll
@@ -171,6 +177,9 @@ public class TestClientServer {
 						+ motif3.toString() + " -> " + res8.toString());
 				System.out.println("test8 takeAll OK ");
 				linda.debug("(8)");
+				System.out.println();
+				
+				
 				// ------------ test 9 -----------------
 				System.out.println("---------- test9 TakeAll vide ----------");
 				// réalisation d'un takeAll
@@ -179,6 +188,9 @@ public class TestClientServer {
 						+ motif3.toString() + " -> " + res9.toString());
 				System.out.println("test9 takeAll vide OK ");
 				linda.debug("(9)");
+				System.out.println();
+				
+				
 				// ------------ test 10 -----------------
 				System.out.println("---------- test10 ReadAll vide ----------");
 				// réalisation d'un readAll
@@ -187,6 +199,9 @@ public class TestClientServer {
 						+ motif3.toString() + " -> " + res10.toString());
 				System.out.println("test10 readAll vide OK ");
 				linda.debug("(10)");
+				System.out.println();
+				
+				
 				// ------------ test 11 -----------------
 				System.out
 						.println("---------- test11 eventRegister - take immediat possible ----------");
@@ -196,6 +211,9 @@ public class TestClientServer {
 						new AsynchronousCallback(new MyCallback11()));
 				System.out.println("test11 take immediat possible : test OK ");
 				linda.debug("(11)");
+				System.out.println();
+				
+				
 				// ------------ test 12 -----------------
 				System.out
 						.println("---------- test12 eventRegister - take immediat pas possible ----------");
@@ -213,6 +231,9 @@ public class TestClientServer {
 						.println("test12 take immediat passé en future : test OK ");
 				// on enlève le tuple restant pour vider la mémoire
 				Tuple res13 = linda.take(motif);
+				System.out.println();
+				
+				
 				// ----------- test13 ---------------------------
 				System.out
 						.println("---------- test13 client1 : take bloquant / client2 : write qui débloque le client1 ----------");
@@ -230,7 +251,9 @@ public class TestClientServer {
 				System.out.println("ooooooooooooooooooooooooooooooooooooo");
 			}
 		}.start();
-		// write d'un tuple attendu pour un take
+		
+		
+		// write d'un tuple attendu pour un take dans le test 1
 		new Thread() {
 			public void run() {
 				try {
@@ -244,10 +267,13 @@ public class TestClientServer {
 				Tuple t2 = new Tuple(4, "test1");
 				System.out.println("(2) write: " + t2);
 				linda.write(t2);
+				System.out.println();
 				// le deuxieme tuple est bien pris et enlevé de la mémoire
 			}
 		}.start();
-		// write d'un tuple attendu pour le read
+		
+		
+		// write d'un tuple attendu pour le read dans le test 2
 		new Thread() {
 			public void run() {
 				try {
@@ -258,9 +284,12 @@ public class TestClientServer {
 				Tuple t3 = new Tuple(4, "test2");
 				linda.write(t3);
 				System.out.println("(3) write: " + t3);
+				System.out.println();
 			}
 		}.start();
-		// write d'un tuple par le deuxieme client attendu pour le take
+		
+		
+		// write d'un tuple par le deuxieme client attendu pour le take : test 13
 		new Thread() {
 			public void run() {
 				try {
@@ -271,6 +300,7 @@ public class TestClientServer {
 				Tuple t13 = new Tuple(13, "test13");
 				linda2.write(t13);
 				System.out.println("(13) write client2: " + t13);
+				System.out.println();
 			}
 		}.start();
 	}

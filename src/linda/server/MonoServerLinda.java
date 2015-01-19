@@ -41,47 +41,32 @@ public class MonoServerLinda extends UnicastRemoteObject implements LindaServer 
 	}
 
 	public void write(Tuple t) throws RemoteException {
-		//synchronized (this.linda) {
+
 			this.linda.write(t);
-		//}
 	}
 
 	public Tuple take(Tuple template) throws RemoteException {
-		//synchronized (this.linda) {
 			return this.linda.take(template);
-		//}
 	}
 
 	public Tuple read(Tuple template) throws RemoteException {
-		//synchronized (this.linda) {
-
-			return this.linda.read(template);
-		//}
+		return this.linda.read(template);
 	}
 
 	public Tuple tryTake(Tuple template) throws RemoteException {
-		//synchronized (this.linda) {
-
 			return this.linda.tryTake(template);
-		//}
 	}
 
 	public Tuple tryRead(Tuple template) throws RemoteException {
-		//synchronized (this.linda) {
 			return this.linda.tryRead(template);
-		//}
 	}
 
 	public Collection<Tuple> takeAll(Tuple template) throws RemoteException {
-		//synchronized (this.linda) {
 			return this.linda.takeAll(template);
-		//}
 	}
 
 	public Collection<Tuple> readAll(Tuple template) throws RemoteException {
-		//synchronized (this.linda) {
 			return this.linda.readAll(template);
-		//}
 	}
 
 	//renvoie le tuple associé à un evenement en attente
@@ -89,11 +74,6 @@ public class MonoServerLinda extends UnicastRemoteObject implements LindaServer 
 			throws RemoteException {
 		Lock mon = new ReentrantLock();
 		Condition cond = mon.newCondition();
-
-//		mon.lock();
-
-//		Semaphore sem = new Semaphore(0);
-//		CallBackTuple cbt = new CallBackTuple(sem);
 		CallBackTuple cbt = new CallBackTuple(mon, cond);
 		this.linda.eventRegister(mode, timing, template,
 				new AsynchronousCallback(cbt));
@@ -108,28 +88,16 @@ public class MonoServerLinda extends UnicastRemoteObject implements LindaServer 
 		}finally{
 			cbt.unlock();
 		}
-//		try {
-//			synchronized(cond){
-//			cond.wait();
-//			}
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
+//		System.out.println("coucou2");
+//		System.out.println("///////////////////////////");
+//		System.out.println("callback activé, tuple : " + cbt.getTuple());
+//		if(mode==eventMode.READ){
+//			System.out.println("mode read");
+//		}else{
+//			System.out.println("mode take");
 //		}
-		
-		//sem.release();
-		System.out.println("coucou2");
-		System.out.println("///////////////////////////");
-		System.out.println("callback activé, tuple : " + cbt.getTuple());
-		if(mode==eventMode.READ){
-			System.out.println("mode read");
-		}else{
-			System.out.println("mode take");
-		}
-		System.out.println("////////////////////////");
-		
-		// cbt.getTuple().toString();
-//		mon.unlock();
+//		System.out.println("////////////////////////");
+
 		return cbt.getTuple();
 
 	}

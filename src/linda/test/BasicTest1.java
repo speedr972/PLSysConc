@@ -13,8 +13,8 @@ public class BasicTest1 {
         
     	//linda.server.LindaServerImpl serv = new linda.server.LindaServerImpl("//localhost:5004/aaa");  	
     	//serv.lancer();
-        //final Linda linda = new linda.shm.CentralizedLinda();
-         final Linda linda = new LindaClient("//localhost:4000/MonServeur");
+        final Linda linda = new linda.shm.CentralizedLinda();
+        //final Linda linda = new LindaClient("//localhost:4000/MonServeur");
          try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e1) {

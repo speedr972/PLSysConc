@@ -4,7 +4,7 @@ import linda.*;
 import linda.Linda.eventMode;
 import linda.Linda.eventTiming;
 
-public class TestAsyschronousClientServeur {
+public class TestAsynchronousClientServeur {
 
     private static class MyCallback implements Callback {
         public void call(Tuple t) {

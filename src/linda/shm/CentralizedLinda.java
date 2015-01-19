@@ -4,9 +4,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import linda.Callback;
 import linda.Linda;
@@ -14,37 +19,69 @@ import linda.Tuple;
 
 /** Shared memory implementation of Linda. */
 public class CentralizedLinda implements Linda {
-	private BlockingQueue<Tuple> tupleSpace;
+	private Lock moniteur;
+	private ArrayList<Tuple> tupleSpace;
+	private Condition autorisation;
+	private int file = 0;
 	private Map<Tuple, BlockingQueue<CallEvent>>  waitingCallBack = new HashMap<Tuple, BlockingQueue<CallEvent>>();
 	
 		
 	
 
     public CentralizedLinda() {
-    	this.tupleSpace = new LinkedBlockingQueue<Tuple>();
-
+    	this.moniteur = new ReentrantLock();
+    	this.tupleSpace = new ArrayList<Tuple>();
+    	this.autorisation = this.moniteur.newCondition();
     }
 
 	public void write(Tuple t) {
 		// TODO Auto-generated method stub
-
+		moniteur.lock();
 		this.tupleSpace.add(t);
+		if(file>0){
+			this.autorisation.signalAll();
+		}
 		this.trouveCallBack(t);
-
+		moniteur.unlock();
 	}
 
 	public Tuple take(Tuple template) {
+	moniteur.lock();
+	while(findTupleSpace(template, this.tupleSpace.iterator())==null){
+		try{
+			file++;
+			autorisation.await();
 
+		}
+		catch (InterruptedException e){
+			e.printStackTrace();
+		}
+		file--;
+	}
 	Tuple inter = null;
 	inter = this.findTupleSpace(template, this.tupleSpace.iterator());
 	this.tupleSpace.remove(inter);
+	moniteur.unlock();
 	return inter;
 		
 	}
 
 	public Tuple read(Tuple template) {
-		Tuple inter = this.findTupleSpace(template, this.tupleSpace.iterator());
+		moniteur.lock();
+		while(findTupleSpace(template, this.tupleSpace.iterator())==null){
+			try{
+				file++;
+				autorisation.await();
 
+			}catch(InterruptedException e){
+				e.printStackTrace();
+			}
+			file--;
+		}
+		
+		Tuple inter = this.findTupleSpace(template, this.tupleSpace.iterator());
+		moniteur.unlock();
+	
 		return inter;
 	}
 
@@ -197,4 +234,22 @@ public class CentralizedLinda implements Linda {
 			}
 		}		
 	}
+
+	public Lock getMoniteur() {
+		return moniteur;
+	}
+
+	public void setMoniteur(Lock moniteur) {
+		this.moniteur = moniteur;
+	}
+
+	public Condition getAutorisation() {
+		return autorisation;
+	}
+
+	public void setAutorisation(Condition autorisation) {
+		this.autorisation = autorisation;
+	}
+
+
 }
